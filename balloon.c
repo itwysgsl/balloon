@@ -47,27 +47,22 @@ void balloon(const unsigned char* input, char* output, int length, const unsigne
 			cnt++;
 
 			for (uint64_t i = 0; i < delta; i++) {
-				// Step 2b: Hash in pseudorandomly chosen blocks
 				uint8_t index[64];
 				sph_groestl512(&ctx_groestl, (uint8_t *)&t, sizeof((uint8_t *)&t));
+				sph_groestl512(&ctx_groestl, (uint8_t *)&cnt, sizeof((uint8_t *)&cnt));
 				sph_groestl512(&ctx_groestl, (uint8_t *)&m, sizeof((uint8_t *)&m));
+				sph_groestl512(&ctx_groestl, salt, slength);
 				sph_groestl512(&ctx_groestl, (uint8_t *)&i, sizeof((uint8_t *)&i));
 				sph_groestl512_close(&ctx_groestl, index);
 				cnt++;
 
-				uint8_t tmp[64];
-				sph_groestl512(&ctx_groestl, (uint8_t *)&cnt, sizeof((uint8_t *)&cnt));
-				sph_groestl512(&ctx_groestl, salt, salt_length);
-				sph_groestl512(&ctx_groestl, index, 64);
-				sph_groestl512_close(&ctx_groestl, tmp);
-
-				uint64_t other = u8tou64(tmp) % s_cost;
+				uint64_t other = u8tou64(index) % s_cost;
 				cnt++;
 
 				sph_groestl512(&ctx_groestl, (uint8_t *)&cnt, sizeof((uint8_t *)&cnt));
-				sph_groestl512(&ctx_groestl, blocks[m], 64);
-				sph_groestl512(&ctx_groestl, blocks[other], 64);
-				sph_groestl512_close(&ctx_groestl, blocks[m]);
+				sph_groestl512(&ctx_groestl, block_index(blocks, m), 64);
+				sph_groestl512(&ctx_groestl, block_index(blocks, other), 64);
+				sph_groestl512_close(&ctx_groestl, block_index(blocks, m));
 				cnt++;
 			}
 		}
