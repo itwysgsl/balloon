@@ -13,8 +13,8 @@ uint64_t u8tou64(uint8_t const* u8){
 
 void balloon(const unsigned char* input, char* output, int length, const unsigned char* salt, int salt_length)
 {
-	const uint64_t s_cost = 128;
-	const uint64_t t_cost = 20;
+	const uint64_t s_cost = 64;
+	const uint64_t t_cost = 2;
 	const int delta = 3;
 	
 	sph_groestl512_context ctx_groestl;
